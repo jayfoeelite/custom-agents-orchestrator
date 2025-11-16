@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Orbitron:wght@400;700&display=swap');
+
+:root {
+    --primary-color: #0d0d2b;
+    --secondary-color: #1a1a3d;
+    --accent-color: #00f7ff;
+    --text-color: #e0e0e0;
+    --header-font: 'Orbitron', sans-serif;
+    --body-font: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    font-family: var(--body-font);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+header {
+    background-image: url('images/header-background.png');
+    background-size: cover;
+    background-position: center;
+    background-color: var(--primary-color);
+    text-align: center;
+    padding: 6rem 1rem;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+header h1 {
+    font-family: var(--header-font);
+    font-size: 3.5rem;
+    color: #fff;
+    margin: 0;
+    text-shadow: 0 0 15px var(--accent-color);
+}
+
+header p.subtitle {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    margin-top: 0.5rem;
+}
+
+main {
+    padding: 2rem 0;
+}
+
+.card {
+    background-color: var(--secondary-color);
+    border: 1px solid #2a2a4f;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 247, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(0, 247, 255, 0.2), transparent 70%);
+    border-radius: 50%;
+    top: var(--mouse-y, -100px);
+    left: var(--mouse-x, -100px);
+    transform: translate(-50%, -50%);
+    transition: top 0.1s, left 0.1s;
+    pointer-events: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+h2 {
+    font-family: var(--header-font);
+    color: var(--accent-color);
+    border-bottom: 1px solid var(--accent-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+pre {
+    background-color: #0d0d2b;
+    border: 1px solid var(--accent-color);
+    padding: 1rem;
+    border-radius: 5px;
+    color: #fff;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+code {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+ul li {
+    padding-left: 1.2em;
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+ul li::before {
+    content: '»';
+    position: absolute;
+    left: 0;
+    color: var(--accent-color);
+}
+
+footer {
+    background-color: #1a1a3d;
+    color: #a0a0a0;
+    padding: 1.5rem;
+    text-align: center;
+    border-top: 1px solid #2a2a4f;
+    margin-top: 2rem;
+}
