@@ -1,0 +1,15 @@
+# Python dependencies for AI Agent Orchestration System tools
+
+# Schema validation
+jsonschema>=4.17.0
+
+# YAML parsing
+PyYAML>=6.0
+
+# Graph generation
+graphviz>=0.20.1
+pydot>=1.4.2
+
+# Optional: Enhanced output formatting
+colorama>=0.4.6
+rich>=13.0.0
