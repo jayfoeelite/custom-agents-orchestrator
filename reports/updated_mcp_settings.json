@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "custom-agents-orchestrator": {
+      "command": "node",
+      "args": ["C:\\Users\\jazbo\\AppData\\Roaming\\Roo-Code\\MCP\\custom-agents-orchestrator\\build\\index.js"],
+      "env": {
+        "AGENTS_DIR": "c:\\Users\\jazbo\\Documents\\develop\\AI Agents\\agents",
+        "MEMORY_DB": "c:\\Users\\jazbo\\Documents\\develop\\AI Agents\\memory.db",
+        "AUTOMATION_MODE": "V2",
+        "ANTHROPIC_API_KEY": "sk-ant-api03-YOUR_API_KEY_HERE"
+      },
+      "disabled": false,
+      "alwaysAllow": ["query_project_state", "list_agent_modes", "get_mode_definition", "execute_agent_mode", "delegate_to_mode"],
+      "disabledTools": []
+    }
+  }
+}

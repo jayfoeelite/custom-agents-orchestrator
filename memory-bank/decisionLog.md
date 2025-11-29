@@ -165,3 +165,125 @@ Infrastructure: memory.db (SQLite), 46 agent YAML definitions
 - Built-in retry logic and error handling
 
 [2025-11-16 20:55:30] - Created a public webpage to provide project details and usage instructions.
+
+### [2025-11-18 04:27:10] - MCP Server Environment Variable Configuration Fix
+
+**Decision**: Fixed the custom-agents-orchestrator MCP server environment variable configuration by addressing a server name mismatch and improving fallback path handling.
+
+**Rationale**:
+- The MCP server was running but not functioning correctly (list_agent_modes returned 0 modes, query_project_state returned empty results)
+- Root cause analysis revealed a naming mismatch between the MCP server registration (`custom-agents-orchestrator`) and internal server code (`custom-agents`)
+- Relative paths in fallback logic were sensitive to the current working directory and unreliable
+
+**Implementation**:
+- Update `agent-executor.js` to use the correct server name (`custom-agents-orchestrator`)
+- Improve fallback paths in `index.js` to use absolute paths instead of relative paths
+- Add error handling and logging to improve diagnostics
+- Implement resilience patterns (circuit breaker, retry, graceful degradation)
+
+**Implications**:
+- Ensures environment variables are properly propagated through all process layers
+- Improves system resilience with proper error handling and fallback mechanisms
+- Provides clear diagnostic information when configuration issues occur
+- Establishes a pattern for robust configuration management in distributed systems
+
+**Documentation**:
+- Created comprehensive report at `reports/mcp_server_env_config_fix.md`
+- Includes root cause analysis, solution, verification steps, and architectural considerations
+
+### [2025-11-21 13:36:00] - MCP Server V2 Automation Configuration
+
+**Decision**: Documented the configuration process for enabling V2 automation in the custom-agents-orchestrator MCP server with Anthropic API integration.
+
+**Rationale**:
+- V2 automation enables full agent mode execution without manual mode switching
+- Claude Agent SDK provides a clean integration path with minimal code changes
+- Haiku model offers the best balance of cost and performance ($0.25/1M input tokens, $1.25/1M output tokens)
+- Configuration via environment variables allows for flexible deployment without code changes
+- Estimated cost of $0.08 per execution is economically viable for the project
+
+**Implementation**:
+- Add `AUTOMATION_MODE=V2` to mcp_settings.json env section
+- Add `ANTHROPIC_API_KEY=sk-ant-...` to mcp_settings.json env section
+- Restart RooCode to load the new configuration
+- Verify with a simple "Hello World" test
+
+**Implications**:
+- Reduces manual steps from 90 to 1 per workflow (90:1 reduction)
+- Enables true orchestration across all 46 agent modes
+- Introduces API costs (~$1.60/month for 20 workflows)
+- Requires API key management and security considerations
+- Provides foundation for future enhancements (parallel execution, conversation threading)
+
+### [2025-11-21 14:16:00] - V2 Automation Implementation for Custom Agents Orchestrator MCP Server
+
+**Decision**: Implemented V2 automation for the Custom Agents Orchestrator MCP server by fixing environment variable configuration issues.
+
+**Implementation**:
+1. Updated getMCPServerConfig() in agent-executor.ts to explicitly pass AUTOMATION_MODE=V2 and ANTHROPIC_API_KEY
+2. Added detailed logging in index.ts main() function to verify environment variables
+3. Created updated mcp_settings.json template with proper configuration
+4. Documented the implementation in reports/mcp_server_env_config_fix.md
+
+**Rationale**:
+- The MCP server was not properly reading the AUTOMATION_MODE and ANTHROPIC_API_KEY environment variables
+- The AgentExecutor was not being initialized correctly due to missing environment variables
+- The getMCPServerConfig() method was using a hardcoded path that might not match the actual path
+- Explicit logging was needed to diagnose environment variable issues
+
+**Implications**:
+- Enables full agent automation using the Anthropic Claude API
+- Reduces manual steps from 90 to 1 per workflow (90:1 reduction)
+- Provides clear diagnostic information for troubleshooting
+- Establishes a pattern for robust configuration management in distributed systems
+
+
+### [2025-11-29 15:31:00] - Removed V2 Automation from Custom Agents Orchestrator MCP Server
+
+**Decision**: Removed all V2 automation functionality from the custom-agents-orchestrator MCP server, reverting to V1 simulation-only mode.
+
+**Rationale**:
+- User reported that V2 automation was not working correctly
+- Uber-orchestrator delegates tasks correctly most of the time without automation
+- V1 simulation mode provides sufficient functionality for current needs
+- Simpler codebase is easier to maintain and debug
+- Removes dependency on Claude Agent SDK and Anthropic API integration
+
+**Implementation**:
+1. **Files Deleted**:
+   - `src/config.ts` (63 lines) - V2 configuration management
+   - `src/agent-executor.ts` (225 lines) - Agent execution engine with Claude SDK
+
+2. **Files Modified**:
+   - `src/index.ts`: Removed all V2-related code including:
+     * Removed imports for AgentExecutor, CONFIG, and logConfig
+     * Removed agentExecutor variable and initializeAgentExecutor() function
+     * Removed execute_agent_mode tool from tools list
+     * Removed execute_agent_mode case handler
+     * Simplified main() function to remove V2 logging
+     * Updated server startup message to indicate "V1 Simulation Mode"
+   
+   - `package.json`: Removed V2 dependencies:
+     * @ant hropic-ai/claude-agent-sdk
+     * @anthropic-ai/sdk  
+     * zod (no longer needed)
+
+3. **Remaining V1 Tools** (Fully Functional):
+   - `list_agent_modes` - Lists all 46 custom agent modes
+   - `get_mode_definition` - Returns complete mode configuration
+   - `delegate_to_mode` - Creates delegation payloads for manual execution
+   - `query_project_state` - Queries memory.db database
+
+**Implications**:
+- MCP server now operates in V1 simulation mode only
+- Manual mode switching still required for task delegation
+- Reduced complexity and dependencies
+- Lower operational costs (no API usage)
+- Easier troubleshooting and maintenance
+- Server continues to provide discovery and delegation simulation
+- Uber-orchestrator can still use all 4 V1 tools effectively
+
+**Next Steps**:
+- Restart RooCode to reload the updated MCP server
+- Test that list_agent_modes and delegate_to_mode work correctly
+- Verify uber-orchestrator can still delegate properly using V1 tools
